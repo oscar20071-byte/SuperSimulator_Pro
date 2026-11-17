@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08111d">
+<title>WINNER-SIM PRO</title>
+<meta name="description" content="Simulador de fútbol con clubes, plantillas, partidos y competiciones.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+<a class="brand" href="#"><span class="mark">W</span><span><b>WINNER-SIM</b><small>PRO · FOOTBALL ENGINE</small></span></a>
+<div class="season">TEMPORADA <b id="season">2026</b></div>
+<nav>
+<button class="nav active" data-view="home">⌂ Panel</button>
+<button class="nav" data-view="clubs">⬡ Clubes y plantillas</button>
+<button class="nav" data-view="competitions">♜ Competiciones</button>
+<button class="nav" data-view="match">⚽ Partidos</button>
+<button class="nav" data-view="stats">▤ Estadísticas</button>
+</nav>
+<div class="side-foot">MATCH ENGINE <span>● ACTIVO</span></div>
+</aside>
+<main>
+<header><div><small>FOOTBALL MANAGEMENT SIMULATOR</small><h1 id="page-title">Panel principal</h1></div><button class="secondary" id="export">⇩ Exportar datos</button></header>
+<section class="view active" id="view-home">
+<div class="hero"><div><small>BIENVENIDO AL TERRENO DE JUEGO</small><h2>Tu fútbol.<br><em>Tus reglas.</em></h2><p>Crea clubes, forma plantillas, organiza torneos y simula temporadas.</p><button class="primary" data-go="clubs">＋ Crear primer club</button></div><div class="pitch"><div></div></div></div>
+<div class="metrics"><article><small>CLUBES</small><b id="m-clubs">0</b></article><article><small>JUGADORES</small><b id="m-players">0</b></article><article><small>PARTIDOS</small><b id="m-matches">0</b></article><article><small>COMPETICIONES</small><b id="m-comps">0</b></article></div>
+<div class="panel"><h3>Últimos resultados</h3><div id="recent" class="empty">Todavía no hay partidos disputados.</div></div>
+</section>
+<section class="view" id="view-clubs">
+<div class="section-head"><div><small>UNIVERSO DE CLUBES</small><h2>Clubes y plantillas</h2></div><button class="primary" id="new-club">＋ Nuevo club</button></div>
+<form class="panel form hidden" id="club-form"><h3>Registrar club</h3><div class="fields"><label>Nombre<input id="club-name" required maxlength="32" placeholder="Atlético Central"></label><label>Siglas<input id="club-abbr" required maxlength="4" placeholder="ATL"></label><label>Media base<input id="club-ovr" type="number" min="40" max="99" value="75"></label><label>Color<input id="club-color" type="color" value="#27d7a0"></label></div><button class="primary">Guardar club</button></form>
+<div id="clubs" class="club-grid"></div>
+</section>
+<section class="view" id="view-competitions">
+<div class="section-head"><div><small>TEMPORADA EN CURSO</small><h2>Competiciones</h2></div><button class="primary" id="new-comp">＋ Nueva competición</button></div>
+<form class="panel form hidden" id="comp-form"><h3>Crear competición</h3><div class="fields"><label>Nombre<input id="comp-name" required placeholder="Liga Distock"></label><label>Formato<select id="comp-type"><option value="league">Liga (ida)</option><option value="cup">Copa eliminatoria</option></select></label></div><button class="primary">Crear competición</button></form>
+<div id="competitions"></div>
+</section>
+<section class="view" id="view-match">
+<div class="section-head"><div><small>MATCHDAY ENGINE</small><h2>Simulador de partidos</h2></div></div>
+<div class="panel"><div class="fields"><label>Equipo local<select id="home"></select></label><label>Equipo visitante<select id="away"></select></label><label>Ritmo<select id="pace"><option value="1">Equilibrado</option><option value="1.5">Ofensivo</option><option value=".7">Conservador</option></select></label></div><button class="primary wide" id="play">⚽ Simular partido</button><div id="result"></div></div>
+</section>
+<section class="view" id="view-stats">
+<div class="section-head"><div><small>CENTRO DE DATOS</small><h2>Estadísticas</h2></div></div>
+<div class="panel"><h3>Tabla de goleadores</h3><div id="scorers" class="empty">Aún no hay goles registrados.</div></div>
+<div class="panel"><h3>Medias de clubes</h3><div id="ratings" class="empty">Registra clubes para comenzar.</div></div>
+<div class="panel"><h3>Respaldo</h3><p class="muted">Exporta o importa tu universo mediante un archivo JSON.</p><label class="secondary file-label">Importar JSON<input id="import" type="file" accept=".json,application/json"></label></div>
+</section>
+<footer>WINNER-SIM PRO · Construye tu propia historia del fútbol.</footer>
+</main>
+</div>
+<div id="toast" role="status"></div>
+<script src="app.js"></script>
+</body></html>
