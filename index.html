@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SuperSimulator_Pro V28 | Golden Awards Edition</title>
+  <meta name="theme-color" content="#15130f">
+  <meta name="description" content="SuperSimulator_Pro: simulador de fútbol, temporadas y Golden Awards.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./assets/supersimulator-icon.svg">
+  <link rel="apple-touch-icon" href="./assets/supersimulator-icon.svg">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -118,6 +123,9 @@
   </style>
 </head>
 <body class="antialiased selection:bg-rose-600 selection:text-white">
+  <button id="install-app-btn" type="button" aria-label="Instalar SuperSimulator Pro o crear acceso directo" style="position:fixed;right:16px;bottom:16px;z-index:70;display:flex;align-items:center;gap:9px;padding:12px 16px;border:1px solid rgba(217,182,111,.7);border-radius:999px;background:linear-gradient(135deg,#302619,#111116);color:#f3e7c8;font:800 12px Manrope,Arial,sans-serif;box-shadow:0 8px 30px #0009;cursor:pointer">
+    <span aria-hidden="true">⬇</span><span>Instalar app</span>
+  </button>
 
   <!-- ==================== PANTALLA DE REGISTRO / ACCESO INICIAL (OBLIGATORIA) ==================== -->
   <div id="auth-screen" class="fixed inset-0 z-50 bg-[#030509] flex items-center justify-center p-4 overflow-y-auto">
@@ -4871,6 +4879,44 @@ ${String(index + 1).padStart(2, "0")} • 🏟️ ${h.name}  **${r.homeGoals} �
         document.getElementById("app-main-wrapper").classList.add("hidden");
       }
     });
+  </script>
+  <script>
+    (() => {
+      let installPrompt = null;
+      const button = document.getElementById("install-app-btn");
+      const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+      const hideIfInstalled = () => { if (isStandalone() && button) button.style.display = "none"; };
+      window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        installPrompt = event;
+        if (button && !isStandalone()) button.style.display = "flex";
+      });
+      window.addEventListener("appinstalled", () => {
+        installPrompt = null;
+        if (button) button.style.display = "none";
+      });
+      button?.addEventListener("click", async () => {
+        if (isStandalone()) { button.style.display = "none"; return; }
+        if (installPrompt) {
+          installPrompt.prompt();
+          await installPrompt.userChoice;
+          installPrompt = null;
+          return;
+        }
+        const ua = navigator.userAgent || "";
+        let instructions = "Para crear un acceso directo: abre el menú del navegador (⋮) y elige «Crear acceso directo» o «Instalar página como aplicación».";
+        if (/iPhone|iPad|iPod/i.test(ua)) instructions = "En Safari: pulsa Compartir y luego «Añadir a pantalla de inicio».";
+        else if (/Android/i.test(ua)) instructions = "En Chrome: pulsa ⋮ y selecciona «Instalar aplicación» o «Añadir a pantalla de inicio».";
+        else instructions += "\\n\\nSi la opción no aparece, espera a que termine de cargar la página y vuelve a abrir el menú.";
+        alert(instructions);
+      });
+      hideIfInstalled();
+      window.addEventListener("load", () => {
+        if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+          navigator.serviceWorker.register("./sw.js").catch(error => console.warn("No se pudo registrar el modo instalable:", error));
+        }
+      });
+    })();
   </script>
 </body>
 </html>
