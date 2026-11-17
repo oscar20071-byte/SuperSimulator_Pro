@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SuperSimulator_Pro v26 Ultimate Awards &amp; Matchday Edition | SHA-256</title>
+  <title>SuperSimulator_Pro v27 Golden Awards Edition | SHA-256</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -91,6 +91,31 @@
       button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline:2px solid #38bdf8; outline-offset:2px; }
       @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
     </style>
+
+  <style id="super-awards-redesign">
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800;900&display=swap');
+    :root{color-scheme:dark;--award-gold:#d9b66f;--award-cream:#f3e7c8;--award-ink:#090a0d;--award-panel:#15151a;--award-line:rgba(217,182,111,.25)}
+    body{font-family:'Manrope',sans-serif!important;background:radial-gradient(ellipse at 50% -15%,rgba(179,137,65,.19),transparent 42%),radial-gradient(ellipse at 5% 25%,rgba(91,68,35,.12),transparent 30%),#090a0d!important;color:#f6f0e4}
+    header{background:linear-gradient(105deg,#111116 0%,#201b14 52%,#101014 100%)!important;border-bottom:1px solid var(--award-line)!important;box-shadow:0 12px 40px #0008}
+    header h1{font-family:'Cinzel',serif!important;letter-spacing:.08em!important;color:var(--award-cream)!important}
+    #main-nav{gap:.55rem!important}
+    nav{background:rgba(12,12,15,.96)!important;border-color:var(--award-line)!important}
+    .nav-btn{border:1px solid rgba(217,182,111,.18)!important;border-radius:999px!important;background:linear-gradient(180deg,#211e19,#121216)!important;color:#d5c7a5!important;letter-spacing:.025em}
+    .nav-btn:hover,.nav-btn.bg-\\[\\#E60023\\]{border-color:var(--award-gold)!important;color:#fff4d7!important;box-shadow:0 0 22px rgba(217,182,111,.13)}
+    .dark-input{background:#101014!important;border-color:rgba(217,182,111,.25)!important;color:#f5eddd!important}
+    .dark-input:focus{border-color:var(--award-gold)!important;box-shadow:0 0 0 3px rgba(217,182,111,.14)!important}
+    .view-section .rounded-2xl,.view-section .rounded-xl{border-color:rgba(217,182,111,.17)}
+    .view-section [class*=bg-\\[\\#0D121B\\]],.view-section [class*=bg-\\[\\#101724\\]]{background:linear-gradient(145deg,#1a1918,#101014)!important}
+    .view-section [class*=border-\\[\\#242E3E\\]]{border-color:rgba(217,182,111,.2)!important}
+    .award-masthead{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(105deg,#17130d 0%,#302619 48%,#141318 100%);border-bottom:1px solid rgba(217,182,111,.32)}
+    .award-masthead:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 82% 50%,rgba(225,188,112,.22),transparent 20%),linear-gradient(90deg,transparent,rgba(255,255,255,.025),transparent)}
+    .award-kicker{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:#c6a96b;font-weight:900}
+    .award-title{font-family:'Cinzel',serif;letter-spacing:.08em;color:#f5e8c8;text-shadow:0 3px 22px #000}
+    .award-orb{width:54px;height:54px;border-radius:50%;border:1px solid rgba(244,218,161,.8);background:radial-gradient(circle at 32% 25%,#fff2c8 0%,#d8b46a 22%,#80602d 58%,#20170d 78%);box-shadow:0 0 0 5px rgba(217,182,111,.08),0 0 35px rgba(217,182,111,.2);display:grid;place-items:center;color:#241a0b;font-size:23px}
+    .gala-gold-card{background:linear-gradient(145deg,rgba(217,182,111,.17),#17151a 68%)!important;border-color:rgba(217,182,111,.48)!important}
+    button{font-family:'Manrope',sans-serif}
+    @media(max-width:640px){.award-title{font-size:19px}.award-orb{width:43px;height:43px;font-size:18px}.award-masthead .award-sub{max-width:230px}}
+  </style>
 </head>
 <body class="antialiased selection:bg-rose-600 selection:text-white">
 
@@ -167,6 +192,17 @@
         </div>
       </div>
     </header>
+
+    <section class="award-masthead px-4 py-5 sm:py-7">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <div class="award-kicker mb-2">THE FOOTBALL HONOURS EXPERIENCE</div>
+          <h2 class="award-title text-xl sm:text-3xl font-extrabold">SUPER SIMULATOR <span class="text-amber-300">PRO</span></h2>
+          <p class="award-sub text-[10px] sm:text-xs text-[#c7b991] mt-2 tracking-[.16em] uppercase">La gloria se juega. La historia se premia.</p>
+        </div>
+        <div class="award-orb shrink-0" aria-label="Balón dorado"><i class="fa-solid fa-futbol"></i></div>
+      </div>
+    </section>
 
     <!-- BARRA DE NAVEGACIÓN -->
     <nav class="bg-[#090E17] border-b border-[#242E3E] px-4 py-2.5 overflow-x-auto">
@@ -762,6 +798,7 @@
         { id: "comp_mdc", name: "Mundial De Clubes", icon: "🌍", format: "knockout", exclusiveMundial: true, defaultVisible: true, desc: "Copa global exclusiva con los 7 clubes clasificados del Mundial de Clubes." },
         { id: "comp_ucl", name: "Champions League", icon: "⭐", format: "knockout", exclusiveMundial: false, defaultVisible: false, desc: "Máxima competición continental de élite europea." },
         { id: "comp_uel", name: "Europa League", icon: "🟠", format: "knockout", exclusiveMundial: false, defaultVisible: false, desc: "Torneo continental eliminatorio." },
+        { id: "comp_cdr", name: "Copa del Rey", icon: "👑", format: "knockout", exclusiveMundial: false, defaultVisible: true, desc: "Torneo nacional español de eliminación directa; configura los clubes participantes desde el Portal del Simulador." },
         { id: "comp_pri", name: "Primera División", icon: "🥇", format: "league", exclusiveMundial: false, defaultVisible: false, desc: "Liga nacional de máxima categoría." },
         { id: "comp_seg", name: "Segunda división", icon: "🥈", format: "league", exclusiveMundial: false, defaultVisible: false, desc: "Liga nacional de ascenso." },
         { id: "comp_lib", name: "Libertadores", icon: "🏆", format: "knockout", exclusiveMundial: false, defaultVisible: false, desc: "Gloria continental sudamericana." },
