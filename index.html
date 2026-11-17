@@ -1551,7 +1551,7 @@
       }
 
       function getAvailableRoster(club) {
-        const fitPlayers = (club.players || []).filter((p) => (p.injuredMatches || 0) === 0);
+        const fitPlayers = (club.players || []).filter((p) => (p.injuredMatches || 0) === 0 && (p.suspendedMatches || 0) === 0);
         if (fitPlayers.length >= 4) {
           const starters = fitPlayers.filter((p) => p.starter);
           const bench = fitPlayers.filter((p) => !p.starter);
@@ -1611,7 +1611,7 @@
       }
 
       function computeClubEffectiveOvr(club) {
-        const starters = (club.players || []).filter((p) => p.starter && (p.injuredMatches || 0) === 0);
+        const starters = (club.players || []).filter((p) => p.starter && (p.injuredMatches || 0) === 0 && (p.suspendedMatches || 0) === 0);
         if (starters.length >= 7) {
           const avg = starters.reduce((acc, p) => acc + (Number(p.ovr) || club.ovr), 0) / starters.length;
           const fatigue = starters.reduce((n,p)=>n+(Number(p.fatigue)||0),0)/starters.length;
@@ -4384,7 +4384,7 @@ ${String(index + 1).padStart(2, "0")} • 🏟️ ${h.name}  **${r.homeGoals} �
       function bindV28(){
         document.getElementById("v28-save")?.addEventListener("click",()=>{const v=document.getElementById("v28-season").value.trim();if(!v)return showToast("Escribe el nombre de temporada.",true);state.currentSeason=v;saveState(false);renderV28();});
         document.getElementById("v28-generate")?.addEventListener("click",v28Generate);
-        document.getElementById("v28-play")?.addEventListener("click",()=>{const r=(state.v28Rounds||[]).find(x=>x.fixtures.some(f=>!f.played));if(!r)return showToast("No hay jornada pendiente.",true);r.fixtures.filter(f=>!f.played).forEach(f=>{const h=state.mainClubs.find(c=>c.id===f.h),a=state.mainClubs.find(c=>c.id===f.a);if(!h||!a)return;const m=simulateMatchEngine(h,a,{contextLabel:"V28 Liga • "+state.currentSeason,injuriesEnabled:true});f.played=true;f.hg=m.homeGoals;f.ag=m.awayGoals;f.matchId=m.index;});saveState(false);renderV28();renderClubsTab();showToast("Jornada simulada y guardada.");});
+        document.getElementById("v28-play")?.addEventListener("click",()=>{const r=(state.v28Rounds||[]).find(x=>x.fixtures.some(f=>!f.played));if(!r)return showToast("No hay jornada pendiente.",true);r.fixtures.filter(f=>!f.played).forEach(f=>{const h=state.mainClubs.find(c=>c.id===f.h),a=state.mainClubs.find(c=>c.id===f.a);if(!h||!a)return;const m=simulateMatchEngine(h,a,{contextLabel:"V28 Liga • "+state.currentSeason,injuriesEnabled:true});f.played=true;f.hg=m.homeGoals;f.ag=m.awayGoals;f.matchId=m.index;});state.v28Schedule=state.v28Rounds.flatMap(x=>x.fixtures);saveState(false);renderV28();renderClubsTab();showToast("Jornada simulada y guardada.");});
         document.getElementById("v28-club")?.addEventListener("change",v28Club);
         document.getElementById("v28-tactic-save")?.addEventListener("click",()=>{const c=state.mainClubs.find(x=>x.id===document.getElementById("v28-club").value);if(!c)return;c.tactic=document.getElementById("v28-tactic").value;saveState(false);renderV28();showToast("Táctica aplicada.");});
         document.getElementById("v28-recover")?.addEventListener("click",()=>{const c=state.mainClubs.find(x=>x.id===document.getElementById("v28-club").value);if(!c)return;(c.players||[]).forEach(p=>{p.fatigue=0;if(p.injuredMatches>0)p.injuredMatches--;});saveState(false);renderV28();renderClubsTab();showToast("Plantilla recuperada.");});
