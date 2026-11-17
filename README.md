@@ -1,4 +1,4 @@
-# WINNER-SIM PRO
+# SuperSimulator_Pro
 
 Simulador de fútbol independiente, desarrollado como aplicación web estática para GitHub Pages.
 
