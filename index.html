@@ -222,6 +222,7 @@
         <button type="button" data-tab="tab-clubs" class="nav-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-extrabold whitespace-nowrap transition bg-[#131A26] text-[#8EA0B8] border border-[#242E3E] hover:text-white">
           <i class="fa-solid fa-shield-halved mr-1.5"></i> Clubes &amp; Enfermería
         </button>
+        <button type="button" data-tab="tab-v28" class="nav-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-extrabold whitespace-nowrap bg-amber-500/15 text-amber-200 border border-amber-400/40"><i class="fa-solid fa-chart-line mr-1.5"></i> Centro V28</button>
         <button type="button" data-tab="tab-tutorial" class="nav-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-extrabold whitespace-nowrap transition bg-[#131A26] text-[#8EA0B8] border border-[#242E3E] hover:text-white">
           <i class="fa-solid fa-book mr-1.5"></i> Tutorial
         </button>
@@ -738,6 +739,16 @@
           <div id="audit-ledger-list" class="space-y-2.5"></div>
         </div>
       </section>
+      <section id="tab-v28" class="view-section hidden space-y-4">
+        <div class="award-masthead rounded-2xl p-5"><div class="award-kicker">SUPER SIMULATOR PRO • V28</div><h2 class="award-title text-2xl mt-2">THE SEASON CONTROL ROOM</h2><p class="text-xs text-amber-100/70 mt-2">Temporadas, calendario, clasificación, táctica, rendimiento y premios.</p></div>
+        <div id="v28-kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <div class="bg-[#15151a] border border-amber-400/20 rounded-2xl p-4 space-y-3"><h3 class="font-black text-amber-100">TEMPORADA Y CALENDARIO</h3><input id="v28-season" class="dark-input" placeholder="Temporada 2026/27" maxlength="40"><div class="flex flex-wrap gap-2"><button id="v28-save" class="px-3 py-2 rounded-lg bg-amber-400 text-black text-xs font-black">Guardar</button><button id="v28-generate" class="px-3 py-2 rounded-lg bg-[#29231a] border border-amber-400/30 text-amber-100 text-xs font-black">Generar liga</button><button id="v28-play" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-black">Simular jornada</button></div><div id="v28-rounds" class="text-xs text-slate-400"></div></div>
+          <div class="bg-[#15151a] border border-amber-400/20 rounded-2xl p-4"><h3 class="font-black text-amber-100 mb-3">CLASIFICACIÓN</h3><div class="overflow-x-auto"><table class="w-full text-xs"><thead class="text-amber-300"><tr><th>#</th><th>Club</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>DG</th><th>PTS</th></tr></thead><tbody id="v28-table"></tbody></table></div></div>
+        </div>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4"><div class="bg-[#15151a] border border-amber-400/20 rounded-2xl p-4"><h3 class="font-black text-amber-100 mb-3">GESTIÓN DE PLANTILLA</h3><select id="v28-club" class="dark-input mb-3"></select><div class="grid grid-cols-2 gap-2"><select id="v28-tactic" class="dark-input"><option value="balanced">Equilibrado</option><option value="attack">Ofensivo</option><option value="possession">Posesión</option><option value="counter">Contraataque</option><option value="defense">Defensivo</option></select><button id="v28-tactic-save" class="rounded-lg bg-amber-400 text-black text-xs font-black">Aplicar táctica</button></div><div id="v28-players" class="space-y-2 mt-3"></div><button id="v28-recover" class="mt-3 px-3 py-2 rounded-lg bg-sky-500/15 border border-sky-400/30 text-sky-200 text-xs font-black">Recuperar plantilla</button></div>
+        <div class="bg-[#15151a] border border-amber-400/20 rounded-2xl p-4"><h3 class="font-black text-amber-100 mb-3">PREMIOS Y CENTRO MÉDICO</h3><div id="v28-awards" class="space-y-2"></div><div id="v28-medical" class="space-y-2 mt-4"></div></div></div>
+      </section>
 
     </main>
   </div>
@@ -1135,7 +1146,10 @@
         compVisibility: buildDefaultVisibilityMap(),
         sealedMatches: [],
         seasonStatsOverrides: {}, // { "playerName|clubId": { goalsDelta, assistsDelta } }
-        galaOverrides: {}, // Premios oficiales editables por Owner: Balón de Oro, Bota de Oro, Golden Boy, Trofeo Kopa, etc.
+        galaOverrides: {},
+        currentSeason: "Temporada 2026/27",
+        v28Schedule: [],
+        v28Rounds: [],
         savedAt: new Date().toISOString()
       };
       state.competitions = buildEmptyCompetitionsMap(state.mundialClubs);
@@ -1165,6 +1179,7 @@
           logo: typeof c.logo === "string" ? c.logo : "",
           ovr: Math.max(40, Math.min(99, Number(c.ovr) || 75)),
           formation: FORMATIONS_LIST.includes(c.formation) ? c.formation : "4-3-3",
+          tactic: ["balanced","attack","possession","counter","defense"].includes(c.tactic) ? c.tactic : "balanced",
           exclusive: Boolean(isExclusive),
           createdBy: String(c.createdBy || ""),
           players: Array.isArray(c.players)
@@ -1175,7 +1190,11 @@
                 starter: typeof p.starter === "boolean" ? p.starter : idx < 11,
                 ovr: Math.max(40, Math.min(99, Number(p.ovr) || 75)),
                 injuredMatches: Math.max(0, Math.min(5, Number(p.injuredMatches) || 0)),
-                injuryReason: String(p.injuryReason || "")
+                injuryReason: String(p.injuryReason || ""),
+                fatigue: Math.max(0,Math.min(100,Number(p.fatigue)||0)),
+                yellowCards: Math.max(0,Number(p.yellowCards)||0),
+                redCards: Math.max(0,Number(p.redCards)||0),
+                suspendedMatches: Math.max(0,Number(p.suspendedMatches)||0)
               }))
             : []
         };
@@ -1438,6 +1457,9 @@
           sealedMatches: Array.isArray(parsed.sealedMatches) ? parsed.sealedMatches : [],
           seasonStatsOverrides: parsed.seasonStatsOverrides && typeof parsed.seasonStatsOverrides === "object" ? parsed.seasonStatsOverrides : {},
           galaOverrides: parsed.galaOverrides && typeof parsed.galaOverrides === "object" ? parsed.galaOverrides : {},
+          currentSeason: String(parsed.currentSeason || "Temporada 2026/27"),
+          v28Schedule: Array.isArray(parsed.v28Schedule) ? parsed.v28Schedule : [],
+          v28Rounds: Array.isArray(parsed.v28Rounds) ? parsed.v28Rounds : [],
           savedAt: parsed.savedAt || new Date().toISOString()
         };
         return true;
@@ -1572,6 +1594,8 @@
               p.injuredMatches = Math.max(0, p.injuredMatches - 1);
               if (p.injuredMatches === 0) p.injuryReason = "";
             }
+            p.fatigue = Math.max(0,(Number(p.fatigue)||0)-10);
+            if(p.suspendedMatches>0)p.suspendedMatches--;
           });
         });
 
@@ -1590,9 +1614,10 @@
         const starters = (club.players || []).filter((p) => p.starter && (p.injuredMatches || 0) === 0);
         if (starters.length >= 7) {
           const avg = starters.reduce((acc, p) => acc + (Number(p.ovr) || club.ovr), 0) / starters.length;
-          return Math.round((club.ovr * 0.4) + (avg * 0.6));
+          const fatigue = starters.reduce((n,p)=>n+(Number(p.fatigue)||0),0)/starters.length;
+          return Math.max(40,Math.round((club.ovr * 0.4) + (avg * 0.6) - fatigue*0.055));
         }
-        return club.ovr;
+        return Math.max(40,club.ovr);
       }
 
       function simulateMatchEngine(homeClub, awayClub, options = {}) {
@@ -1607,8 +1632,9 @@
         const hEffOvr = computeClubEffectiveOvr(homeClub);
         const aEffOvr = computeClubEffectiveOvr(awayClub);
 
-        const hPower = hEffOvr + 2.0;
-        const aPower = aEffOvr;
+        const tacticBonus = {balanced:0,attack:1.8,possession:1.1,counter:0.8,defense:-0.2};
+        const hPower = hEffOvr + 2.0 + (tacticBonus[homeClub.tactic || "balanced"] || 0);
+        const aPower = aEffOvr + (tacticBonus[awayClub.tactic || "balanced"] || 0);
         const diff = hPower - aPower;
 
         const hPoss = Math.max(32, Math.min(68, Math.round(50 + diff * 0.8 + (Math.random() - 0.5) * 8)));
@@ -1779,6 +1805,17 @@
         }
 
         processClubMedicalRecovery(homeClub.id, awayClub.id, injuriesLog);
+        [homeClub,awayClub].forEach(club=>(club.players||[]).filter(p=>p.starter&&!p.injuredMatches&&!p.suspendedMatches).forEach(p=>p.fatigue=Math.min(100,(Number(p.fatigue)||0)+12+Math.floor(Math.random()*7))));
+        const disciplinary=[];
+        [homeClub,awayClub].forEach(club=>{
+          const eligible=(club.players||[]).filter(p=>!p.injuredMatches&&!p.suspendedMatches);
+          if(eligible.length&&Math.random()<0.62){
+            const p=eligible[Math.floor(Math.random()*eligible.length)];p.yellowCards=(p.yellowCards||0)+1;disciplinary.push({clubId:club.id,playerName:p.name,type:"yellow"});
+            events.push({minute:Math.floor(15+Math.random()*72),type:"card",side:club.id===homeClub.id?"home":"away",text:"🟨 Amarilla para "+p.name+" ("+club.abbr+")."});
+            if(Math.random()<0.035){p.redCards=(p.redCards||0)+1;p.suspendedMatches=Math.max(1,p.suspendedMatches||0);disciplinary.push({clubId:club.id,playerName:p.name,type:"red"});events.push({minute:Math.floor(20+Math.random()*68),type:"card",side:club.id===homeClub.id?"home":"away",text:"🟥 Roja para "+p.name+". Suspensión de 1 partido."});}
+            if(p.yellowCards%5===0){p.suspendedMatches=Math.max(1,p.suspendedMatches||0);events.push({minute:90,type:"info",side:club.id===homeClub.id?"home":"away",text:"⛔ "+p.name+" recibe 1 partido de suspensión por acumulación."});}
+          }
+        });
 
         const blockIndex = state.sealedMatches.length + 1;
         const prevHash = state.sealedMatches.length > 0 ? state.sealedMatches[state.sealedMatches.length - 1].hash : "0".repeat(64);
@@ -1804,7 +1841,9 @@
           stats,
           events,
           randomLog,
-          injuriesLog
+          injuriesLog,
+          disciplinary,
+          season: state.currentSeason
         };
 
         const hash = sha256Hex(JSON.stringify(rawPayload));
@@ -4309,9 +4348,50 @@ ${String(index + 1).padStart(2, "0")} • 🏟️ ${h.name}  **${r.homeGoals} �
         if (tabId === "tab-god") renderGodPortal();
         if (tabId === "tab-clubs") renderClubsTab();
         if (tabId === "tab-audit") renderAuditTab();
+        if (tabId === "tab-v28") renderV28();
+      }
+
+
+      function v28Stats(){
+        const rows=state.mainClubs.map(c=>({id:c.id,name:c.name,pj:0,g:0,e:0,p:0,gf:0,gc:0,pts:0})),by=Object.fromEntries(rows.map(x=>[x.id,x]));
+        (state.v28Schedule||[]).filter(f=>f.played).forEach(f=>{const h=by[f.h],a=by[f.a];if(!h||!a)return;h.pj++;a.pj++;h.gf+=f.hg;h.gc+=f.ag;a.gf+=f.ag;a.gc+=f.hg;if(f.hg>f.ag){h.g++;h.pts+=3;a.p++;}else if(f.hg<f.ag){a.g++;a.pts+=3;h.p++;}else{h.e++;a.e++;h.pts++;a.pts++;}});
+        return rows.sort((a,b)=>b.pts-a.pts||(b.gf-b.gc)-(a.gf-a.gc)||b.gf-a.gf);
+      }
+      function v28Generate(){
+        let ids=state.mainClubs.map(c=>c.id);if(ids.length<2){showToast("Necesitas al menos 2 clubes.",true);return;}if(ids.length%2)ids.push(null);
+        let n=ids.length,rot=[...ids],rounds=[];
+        for(let r=0;r<n-1;r++){let fixtures=[];for(let j=0;j<n/2;j++){let h=rot[j],a=rot[n-1-j];if(h&&a)fixtures.push({h:r%2?a:h,a:r%2?h:a,played:false});}rounds.push({number:r+1,fixtures});rot=[rot[0],rot[n-1],...rot.slice(1,n-1)];}
+        let away=rounds.map((r,i)=>({number:rounds.length+i+1,fixtures:r.fixtures.map(f=>({h:f.a,a:f.h,played:false}))}));
+        state.v28Rounds=[...rounds,...away];state.v28Schedule=state.v28Rounds.flatMap(r=>r.fixtures);saveState(false);renderV28();showToast("Calendario de liga generado.");
+      }
+      function renderV28(){
+        const set=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;},clubs=state.mainClubs||[],rounds=state.v28Rounds||[],played=(state.v28Schedule||[]).filter(f=>f.played).length;
+        set("v28-kpis",[["TEMPORADA",state.currentSeason],["CLUBES",clubs.length],["PARTIDOS",played+"/"+(state.v28Schedule||[]).length],["JORNADAS",rounds.length]].map(x=>'<div class="rounded-xl border border-amber-400/20 bg-[#17151a] p-3"><div class="text-[9px] text-amber-300">'+x[0]+'</div><div class="text-lg font-black">'+escapeHTML(x[1])+'</div></div>').join(""));
+        const si=document.getElementById("v28-season");if(si&&document.activeElement!==si)si.value=state.currentSeason||"";
+        const table=v28Stats();set("v28-table",table.map((t,i)=>'<tr class="border-b border-white/5"><td>'+(i+1)+'</td><td>'+escapeHTML(t.name)+'</td><td>'+t.pj+'</td><td>'+t.g+'</td><td>'+t.e+'</td><td>'+t.p+'</td><td>'+(t.gf-t.gc)+'</td><td class="font-black text-amber-200">'+t.pts+'</td></tr>').join("")||'<tr><td colspan="8">Aún no hay clubes.</td></tr>');
+        const next=rounds.find(r=>r.fixtures.some(f=>!f.played));set("v28-rounds",rounds.length?"Jornadas: "+rounds.length+" • Partidos: "+played+" • "+(next?"Próxima jornada: "+next.number:"Temporada completada"):"Genera el calendario para iniciar.");
+        const cs=document.getElementById("v28-club");if(cs){const prev=cs.value;cs.innerHTML=clubs.map(c=>'<option value="'+escapeHTML(c.id)+'">'+escapeHTML(c.name)+'</option>').join("");if(clubs.some(c=>c.id===prev))cs.value=prev;v28Club();}
+        let goals={};const ids=new Set((state.v28Schedule||[]).filter(f=>f.played).map(f=>f.matchId));(state.sealedMatches||[]).filter(m=>ids.has(m.index)).forEach(m=>(m.events||[]).forEach(e=>{if(e.type==="goal")goals[e.scorer]=(goals[e.scorer]||0)+1;}));
+        set("v28-awards",Object.entries(goals).sort((a,b)=>b[1]-a[1]).slice(0,10).map((x,i)=>'<div class="flex justify-between text-xs"><span>'+(i+1)+'. '+escapeHTML(x[0])+'</span><b>'+x[1]+' goles</b></div>').join("")||'<div class="text-xs text-slate-500">La Bota de Oro se actualizará con los partidos.</div>');
+        const med=clubs.flatMap(c=>(c.players||[]).filter(p=>p.fatigue||p.injuredMatches||p.yellowCards||p.redCards||p.suspendedMatches).map(p=>'<div class="rounded bg-black/20 p-2 text-xs">'+escapeHTML(p.name)+' • '+escapeHTML(c.name)+'<div class="text-amber-200">Fatiga '+(p.fatigue||0)+'% • 🟨 '+(p.yellowCards||0)+' • 🟥 '+(p.redCards||0)+'</div><div class="text-rose-300">'+(p.injuredMatches?'Lesión '+p.injuredMatches+' PJ ':'')+(p.suspendedMatches?'Suspensión '+p.suspendedMatches+' PJ':'')+'</div></div>'));set("v28-medical",med.join("")||'<div class="text-xs text-slate-500">Sin alertas médicas o disciplinarias.</div>');
+      }
+      function v28Club(){
+        const c=state.mainClubs.find(x=>x.id===document.getElementById("v28-club")?.value);if(!c)return;
+        document.getElementById("v28-tactic").value=c.tactic||"balanced";const host=document.getElementById("v28-players");
+        host.innerHTML=(c.players||[]).map((p,i)=>'<div class="rounded bg-black/20 p-2 text-xs"><b>'+escapeHTML(p.name)+' • OVR '+p.ovr+'</b><div class="grid grid-cols-2 gap-2 mt-2"><label>Media<input data-ovr="'+i+'" type="number" min="40" max="99" value="'+p.ovr+'" class="dark-input"></label><label>Fatiga<input data-fat="'+i+'" type="number" min="0" max="100" value="'+(p.fatigue||0)+'" class="dark-input"></label></div></div>').join("")||'<div class="text-xs text-slate-500">Añade jugadores en Clubes & Enfermería.</div>';
+        host.querySelectorAll("[data-ovr],[data-fat]").forEach(el=>el.addEventListener("change",()=>{const i=Number(el.getAttribute("data-ovr")??el.getAttribute("data-fat"));if(el.hasAttribute("data-ovr"))c.players[i].ovr=Math.max(40,Math.min(99,Number(el.value)||40));else c.players[i].fatigue=Math.max(0,Math.min(100,Number(el.value)||0));saveState(false);renderV28();renderClubsTab();}));
+      }
+      function bindV28(){
+        document.getElementById("v28-save")?.addEventListener("click",()=>{const v=document.getElementById("v28-season").value.trim();if(!v)return showToast("Escribe el nombre de temporada.",true);state.currentSeason=v;saveState(false);renderV28();});
+        document.getElementById("v28-generate")?.addEventListener("click",v28Generate);
+        document.getElementById("v28-play")?.addEventListener("click",()=>{const r=(state.v28Rounds||[]).find(x=>x.fixtures.some(f=>!f.played));if(!r)return showToast("No hay jornada pendiente.",true);r.fixtures.filter(f=>!f.played).forEach(f=>{const h=state.mainClubs.find(c=>c.id===f.h),a=state.mainClubs.find(c=>c.id===f.a);if(!h||!a)return;const m=simulateMatchEngine(h,a,{contextLabel:"V28 Liga • "+state.currentSeason,injuriesEnabled:true});f.played=true;f.hg=m.homeGoals;f.ag=m.awayGoals;f.matchId=m.index;});saveState(false);renderV28();renderClubsTab();showToast("Jornada simulada y guardada.");});
+        document.getElementById("v28-club")?.addEventListener("change",v28Club);
+        document.getElementById("v28-tactic-save")?.addEventListener("click",()=>{const c=state.mainClubs.find(x=>x.id===document.getElementById("v28-club").value);if(!c)return;c.tactic=document.getElementById("v28-tactic").value;saveState(false);renderV28();showToast("Táctica aplicada.");});
+        document.getElementById("v28-recover")?.addEventListener("click",()=>{const c=state.mainClubs.find(x=>x.id===document.getElementById("v28-club").value);if(!c)return;(c.players||[]).forEach(p=>{p.fatigue=0;if(p.injuredMatches>0)p.injuredMatches--;});saveState(false);renderV28();renderClubsTab();showToast("Plantilla recuperada.");});
       }
 
       function bindAllEvents() {
+        bindV28();
         document.querySelectorAll(".nav-btn").forEach((btn) => {
           btn.addEventListener("click", () => switchTab(btn.getAttribute("data-tab")));
         });
@@ -4764,6 +4844,7 @@ ${String(index + 1).padStart(2, "0")} • 🏟️ ${h.name}  **${r.homeGoals} �
 
       loadState();
       bindAllEvents();
+      renderV28();
       initRequestSync();
       updateRequestBadges();
 
